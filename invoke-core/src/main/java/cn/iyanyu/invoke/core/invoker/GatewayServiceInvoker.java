@@ -1,9 +1,12 @@
 package cn.iyanyu.invoke.core.invoker;
 
 import cn.iyanyu.invoke.api.config.InvokeDefinition;
+import cn.iyanyu.invoke.api.constants.ResponseStatus;
 import cn.iyanyu.invoke.api.invoker.ServiceInvoker;
 import cn.iyanyu.invoke.api.model.InvokeContext;
+import cn.iyanyu.invoke.api.model.InvokeResponse;
 import cn.iyanyu.invoke.api.protocol.InvokeProtocolHandler;
+import cn.iyanyu.invoke.core.protocol.InvokeProtocolHandlerManager;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
@@ -16,6 +19,7 @@ public class GatewayServiceInvoker implements ServiceInvoker {
     @Override
     public <RES> void invoke(InvokeContext<RES> invokeContext) {
         this.initHeaders(invokeContext);
+        this.initServiceUrl(invokeContext);
         this.sign(invokeContext);
         this.encrypt(invokeContext);
         String protocol = invokeContext.getInvokeDefinition().getComProtocolId();
@@ -41,6 +45,25 @@ public class GatewayServiceInvoker implements ServiceInvoker {
         if (!StringUtils.isAllBlank(definition.getServiceUrl())) {
             definition.setServiceUrl("/gateway");
         }
+    }
+
+    private <RES> void resolveResponse(InvokeContext<RES> invokeContext) {
+        InvokeResponse<RES> invokeResponse = invokeContext.getInvokeResponse();
+        Map<String, String> headers = invokeResponse.getHeader();
+        String responseCode = (String) headers.get("code");
+        String errorMsg = "";
+        ResponseStatus responseStatus;
+        if (StringUtils.isBlank(responseCode)) {
+            responseStatus = ResponseStatus.UNKNOWN;
+        } else if ("000000000000".equals(responseCode)) {
+            responseStatus = ResponseStatus.SUCCESS;
+        } else {
+            responseStatus = ResponseStatus.FAIL;
+            errorMsg = (String) headers.get("desc");
+            invokeResponse.setErrorMsg(errorMsg);
+        }
+
+        invokeResponse.setStatus(responseStatus);
     }
 
     private void sign(InvokeContext invokeContext) {

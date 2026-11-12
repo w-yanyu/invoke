@@ -12,23 +12,15 @@ public class SpiFactoriesLoader implements FactoriesLoader {
     @Override
     public <T> List<T> getAllFactories(Class<T> factoryClass) {
         Map<String, T> factoryInstances = getFactories(factoryClass);
-        if (factoryInstances.size() == 0) {
+        if (factoryInstances == null || factoryInstances.isEmpty()) {
             return Collections.emptyList();
         } else {
-            List<T> ret = new ArrayList();
-            Iterator var3 = factoryInstances.entrySet().iterator();
-
-            while(var3.hasNext()) {
-                Map.Entry<String, T> entry = (Map.Entry)var3.next();
-                ret.add(entry.getValue());
-            }
-
-            return ret;
+            return new ArrayList<>(factoryInstances.values());
         }
     }
 
     private static <T> Map<String, T> getFactories(Class<T> factoryClass) {
-        Map<String, T> factoryInstances = (Map)cache.get(factoryClass);
+        Map factoryInstances = (Map<String, T>)cache.get(factoryClass);
         if (factoryInstances == null) {
             loadFactories(factoryClass);
             factoryInstances = (Map)cache.get(factoryClass);
@@ -38,29 +30,43 @@ public class SpiFactoriesLoader implements FactoriesLoader {
     }
 
     private static void loadFactories(Class<?> factoryClass) {
-        List<?> factories = null;//SpringFactoriesLoader.loadFactories(factoryClass, (ClassLoader)null);
-        if (factories == null) {
-            cache.put(factoryClass, NULL_MAP);
+        ServiceLoader<?> factories = ServiceLoader.load(factoryClass);
+
+        Map<String, Object> factoryInstances = new LinkedHashMap<>();
+        Object oldest = null;
+        Object newest = null;
+
+        for (Object factory : factories) {
+            String spiName = getSpiName(factory.getClass());
+            if (spiName == null || spiName.isEmpty()) {
+                continue;
+            }
+
+            Object old = factoryInstances.putIfAbsent(spiName, factory);
+            if (old != null) {
+                continue;
+            }
+
+            if (oldest == null) {
+                oldest = factory;
+            }
+            newest = factory;
+        }
+
+        if (oldest != null) {
+            newestCache.putIfAbsent(factoryClass, newest);
+            oldestCache.putIfAbsent(factoryClass, oldest);
+        }
+
+        cache.putIfAbsent(factoryClass, factoryInstances);
+    }
+
+    public static String getSpiName(Class<?> clazz) {
+        SpiMeta spiMeta = (SpiMeta)clazz.getAnnotation(SpiMeta.class);
+        if (spiMeta == null) {
+            return clazz.getSimpleName();
         } else {
-            Map<String, Object> factoryInstances = new LinkedHashMap();
-
-            Object factory;
-            String spiName;
-            for(Iterator var3 = factories.iterator(); var3.hasNext(); factoryInstances.put(spiName, factory)) {
-                factory = var3.next();
-                spiName = getSpiName(factory.getClass());
-                Object old = factoryInstances.get(spiName);
-                if (old != null) {
-                    LOGGER.warn("SPI id has already exist, new class's order >= old class's order, ovrride.[new class = [%s], old class = [%s]]", factory.getClass().getName(), old.getClass().getName());
-                }
-            }
-
-            if (factories.size() > 0) {
-                newestCache.putIfAbsent(factoryClass, factories.get(factories.size() - 1));
-                oldestCache.putIfAbsent(factoryClass, factories.get(0));
-            }
-
-            cache.putIfAbsent(factoryClass, factoryInstances);
+            return !"".equals(spiMeta.id()) ? spiMeta.id() : clazz.getSimpleName();
         }
     }
 }

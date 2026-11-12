@@ -4,4 +4,6 @@ import cn.iyanyu.invoke.api.model.InvokeContext;
 
 public interface InvokeProtocolHandler {
     <RES> void invoke(InvokeContext<RES> invokeContext);
+
+    String getSpiId();
 }
