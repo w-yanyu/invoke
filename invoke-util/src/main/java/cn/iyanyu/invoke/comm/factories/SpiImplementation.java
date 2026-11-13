@@ -1,10 +1,10 @@
-package cn.iyanyu.invoke.api.factories;
+package cn.iyanyu.invoke.comm.factories;
 
 import java.lang.annotation.*;
 
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-public @interface SpiMeta {
+public @interface SpiImplementation {
     String id() default "";
 }

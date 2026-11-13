@@ -5,12 +5,26 @@ import cn.iyanyu.invoke.api.enums.HttpMethod;
 import cn.iyanyu.invoke.api.model.InvokeContext;
 import cn.iyanyu.invoke.api.model.InvokeRequest;
 import cn.iyanyu.invoke.api.model.InvokeResponse;
+import cn.iyanyu.invoke.comm.util.SpringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
-import java.net.http.HttpHeaders;
 import java.util.Map;
 
 public class RestLoadProtocolHandler extends AbstractRestProtocolHandler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RestLoadProtocolHandler.class);
+
+    private RestTemplate loadRestTemplate = (RestTemplate) SpringUtils.getBean("load_balance_rest_template_invoke", RestTemplate.class);
+
     @Override
     public <RES> void invoke(InvokeContext<RES> invokeContext) {
         InvokeDefinition invokeDefinition = invokeContext.getInvokeDefinition();
@@ -19,16 +33,20 @@ public class RestLoadProtocolHandler extends AbstractRestProtocolHandler {
         String targetApplicationName = invokeDefinition.getExternalSvcApplicationId();
         String serviceUrl = invokeDefinition.getServiceUrl();
         Map<String, String> requestHeader = invokeRequest.getRequestHeader();
-
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("[Service Invoke] [Rest Load] Before convert request pkg, the request body is[{}], request header is[{}]", JsonUtil.format(invokeRequest.getRequestParams()), requestHeader);
+        }
 
         Map<String, Object> requestParams = this.getPkgConverter(invokeDefinition.getPkgConverterType()).convertRequest(invokeRequest.getRequestParams(), requestHeader);
-
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("[Service Invoke] [Rest Load] Convert request pkg success! ");
+        }
 
         HttpMethod httpMethod = invokeDefinition.getHttpMethod();
         HttpHeaders httpHeaders = this.buildHeaders(requestHeader);
         String url = this.createUrl(targetApplicationName, serviceUrl);
         ResponseEntity result;
-        if (invokeDefinition.isMockFlag()) {
+        if (invokeDefinition.getMockFlag()) {
             result = this.doMock(invokeDefinition);
         } else {
             try {
@@ -71,13 +89,13 @@ public class RestLoadProtocolHandler extends AbstractRestProtocolHandler {
         invokeResponse.setHeader(responseHeaders);
     }
 
-
-    private ResponseEntity<Object> doMock(ServiceInvokeDefinition invokeDefinition) {
-        MockPkgLoader mockPkgLoader = (MockPkgLoader)SpringUtils.getBean(MockPkgLoader.class);
-        String mockPkg = mockPkgLoader.loadMockPkg(invokeDefinition);
-        ResponseEntity<Object> responseEntity = new ResponseEntity(mockPkg, HttpStatus.OK);
-        return responseEntity;
-    }
+//
+//    private ResponseEntity<Object> doMock(ServiceInvokeDefinition invokeDefinition) {
+//        MockPkgLoader mockPkgLoader = (MockPkgLoader)SpringUtils.getBean(MockPkgLoader.class);
+//        String mockPkg = mockPkgLoader.loadMockPkg(invokeDefinition);
+//        ResponseEntity<Object> responseEntity = new ResponseEntity(mockPkg, HttpStatus.OK);
+//        return responseEntity;
+//    }
 
     @Override
     public String getSpiId() {

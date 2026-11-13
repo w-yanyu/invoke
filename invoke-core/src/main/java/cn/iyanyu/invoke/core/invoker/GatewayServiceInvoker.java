@@ -7,7 +7,7 @@ import cn.iyanyu.invoke.api.model.InvokeContext;
 import cn.iyanyu.invoke.api.model.InvokeResponse;
 import cn.iyanyu.invoke.api.protocol.InvokeProtocolHandler;
 import cn.iyanyu.invoke.core.protocol.InvokeProtocolHandlerManager;
-import org.apache.commons.lang3.StringUtils;
+import io.micrometer.common.util.StringUtils;
 
 import java.util.Map;
 
@@ -42,7 +42,7 @@ public class GatewayServiceInvoker implements ServiceInvoker {
 
     private <RES> void initServiceUrl(InvokeContext<RES> invokeContext) {
         InvokeDefinition definition = invokeContext.getInvokeDefinition();
-        if (!StringUtils.isAllBlank(definition.getServiceUrl())) {
+        if (!org.springframework.util.StringUtils.hasLength(definition.getServiceUrl())) {
             definition.setServiceUrl("/gateway");
         }
     }

@@ -10,9 +10,15 @@
         <module>invoke-core</module>
         <module>invoke-component-autoconfigure</module>
         <module>invoke-api</module>
+        <module>invoke-util</module>
     </modules>
 
     <properties>
+        <spring.boot.dependencies.version>3.5.9</spring.boot.dependencies.version>
+        <spring.framework.version>6.2.11</spring.framework.version>
+        <spring.cloud.version>2025.0.0</spring.cloud.version>
+        <jackson.version>2.21.1</jackson.version>
+        <jackson.databind.version>2.21.1</jackson.databind.version>
         <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -20,9 +26,22 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-lang3</artifactId>
-                <version>3.18.0</version>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.dependencies.version}</version>  <!-- 3.5.9 -->
+                <type>pom</type><scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <type>pom</type>
+                <scope>import</scope>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.databind.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
