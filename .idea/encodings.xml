@@ -7,6 +7,10 @@
     <file url="file://$PROJECT_DIR$/invoke-component-autoconfigure/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/invoke-core/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/invoke-core/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/invoke-error/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/invoke-error/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/invoke-util/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/invoke-util/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
   </component>

@@ -5,11 +5,14 @@ import cn.iyanyu.invoke.api.enums.HttpMethod;
 import cn.iyanyu.invoke.api.model.InvokeContext;
 import cn.iyanyu.invoke.api.model.InvokeRequest;
 import cn.iyanyu.invoke.api.model.InvokeResponse;
+import cn.iyanyu.invoke.api.pkg.MockPkgLoader;
 import cn.iyanyu.invoke.comm.util.SpringUtils;
+import cn.iyanyu.invoke.comm.util.json.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -46,7 +49,7 @@ public class RestLoadProtocolHandler extends AbstractRestProtocolHandler {
         HttpHeaders httpHeaders = this.buildHeaders(requestHeader);
         String url = this.createUrl(targetApplicationName, serviceUrl);
         ResponseEntity result;
-        if (invokeDefinition.getMockFlag()) {
+        if (invokeDefinition.isMockFlag()) {
             result = this.doMock(invokeDefinition);
         } else {
             try {
@@ -89,13 +92,13 @@ public class RestLoadProtocolHandler extends AbstractRestProtocolHandler {
         invokeResponse.setHeader(responseHeaders);
     }
 
-//
-//    private ResponseEntity<Object> doMock(ServiceInvokeDefinition invokeDefinition) {
-//        MockPkgLoader mockPkgLoader = (MockPkgLoader)SpringUtils.getBean(MockPkgLoader.class);
-//        String mockPkg = mockPkgLoader.loadMockPkg(invokeDefinition);
-//        ResponseEntity<Object> responseEntity = new ResponseEntity(mockPkg, HttpStatus.OK);
-//        return responseEntity;
-//    }
+
+    private ResponseEntity<Object> doMock(InvokeDefinition invokeDefinition) {
+        MockPkgLoader mockPkgLoader = (MockPkgLoader)SpringUtils.getBean(MockPkgLoader.class);
+        String mockPkg = mockPkgLoader.loadMockPkg(invokeDefinition);
+        ResponseEntity<Object> responseEntity = new ResponseEntity(mockPkg, HttpStatus.OK);
+        return responseEntity;
+    }
 
     @Override
     public String getSpiId() {

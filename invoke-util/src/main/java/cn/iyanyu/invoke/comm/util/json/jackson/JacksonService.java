@@ -40,7 +40,7 @@ public class JacksonService implements JsonService {
         try {
             return isPretty ? OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(data) : OBJECT_MAPPER.writeValueAsString(data);
         } catch (Exception var4) {
-            throw new RuntimeException(SP_CE.E005_ERROR() + data + SP_CE.E007_ERROR(), var4);
+            throw new RuntimeException("序列化对象[" + data + "]失败", var4);
         }
     }
 
@@ -49,7 +49,7 @@ public class JacksonService implements JsonService {
         try {
             return PKG_MAPPER.writeValueAsString(data);
         } catch (JsonProcessingException var3) {
-            throw new RuntimeException(SP_CE.E005_ERROR() + data + SP_CE.E007_ERROR(), var3);
+            throw new RuntimeException("序列化对象[" + data + "]失败", var3);
         }
     }
 
@@ -72,7 +72,7 @@ public class JacksonService implements JsonService {
         try {
             return OBJECT_MAPPER.readValue(str, OBJECT_MAPPER.constructType(type));
         } catch (Exception var4) {
-            throw new RuntimeException(SP_CE.E006_ERROR() + str + SP_CE.E007_ERROR(), var4);
+            throw new RuntimeException("反序列化对象[" + str + "]失败", var4);
         }
     }
 
