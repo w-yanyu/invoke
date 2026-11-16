@@ -1,7 +1,9 @@
 package cn.iyanyu.invoke.comm.util.json.jackson;
 
 import cn.iyanyu.invoke.comm.util.json.JsonService;
+import cn.iyanyu.invoke.comm.util.json.jackson.std.BigDecimalStdSerializer;
 import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -9,6 +11,16 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.deser.DurationDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.DurationSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
@@ -64,7 +76,7 @@ public class JacksonService implements JsonService {
 
     @Override
     public <T> T parse(String str, Class<T> clazz) {
-        return this.parse(str, (Type)clazz);
+        return this.parse(str, (Type) clazz);
     }
 
     @Override
@@ -78,7 +90,7 @@ public class JacksonService implements JsonService {
 
     @Override
     public Map<String, Object> parseMap(String str) {
-        return (Map)this.parse(str, (new TypeReference<Map<String, Object>>() {
+        return this.parse(str, (new TypeReference<Map<String, Object>>() {
         }).getType());
     }
 
@@ -86,7 +98,7 @@ public class JacksonService implements JsonService {
     public <T> List<T> parseList(String str, Type type) {
         try {
             JavaType javaType = OBJECT_MAPPER.constructType(type);
-            return (List)OBJECT_MAPPER.readValue(str, OBJECT_MAPPER.getTypeFactory().constructCollectionType(List.class, javaType));
+            return OBJECT_MAPPER.readValue(str, OBJECT_MAPPER.getTypeFactory().constructCollectionType(List.class, javaType));
         } catch (JsonProcessingException var4) {
             throw new RuntimeException(var4);
         }
@@ -96,7 +108,7 @@ public class JacksonService implements JsonService {
     public <T> T[] parseArgs(String str, Type type) {
         try {
             JavaType elementType = OBJECT_MAPPER.constructType(type);
-            return (T[]) OBJECT_MAPPER.readValue(str, OBJECT_MAPPER.getTypeFactory().constructArrayType(elementType));
+            return OBJECT_MAPPER.readValue(str, OBJECT_MAPPER.getTypeFactory().constructArrayType(elementType));
         } catch (JsonProcessingException var4) {
             throw new RuntimeException(var4);
         }
@@ -117,7 +129,7 @@ public class JacksonService implements JsonService {
         module.addDeserializer(Duration.class, DurationDeserializer.INSTANCE);
         module.addSerializer(Duration.class, DurationSerializer.INSTANCE);
         OBJECT_MAPPER.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"));
-        OBJECT_MAPPER.registerModules(new Module[]{module, new Jdk8Module(), new ApsModule(true)});
+        OBJECT_MAPPER.registerModules(module, new Jdk8Module());
         OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         OBJECT_MAPPER.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         OBJECT_MAPPER.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
@@ -136,12 +148,12 @@ public class JacksonService implements JsonService {
         pkgModule.addSerializer(Boolean.class, ToStringSerializer.instance);
         pkgModule.addSerializer(Boolean.TYPE, ToStringSerializer.instance);
         PKG_MAPPER.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"));
-        PKG_MAPPER.registerModules(new Module[]{pkgModule, new Jdk8Module(), new ApsModule(true)});
+        PKG_MAPPER.registerModules(pkgModule, new Jdk8Module());
         PKG_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         PKG_MAPPER.configure(DeserializationFeature.FAIL_ON_NUMBERS_FOR_ENUMS, true);
         PKG_MAPPER.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         PKG_MAPPER.configure(SerializationFeature.WRITE_ENUMS_USING_TO_STRING, true);
         PKG_MAPPER.configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, true);
-        PKG_MAPPER.configure(Feature.WRITE_NUMBERS_AS_STRINGS, true);
+        PKG_MAPPER.configure(JsonGenerator.Feature.WRITE_NUMBERS_AS_STRINGS, true);
     }
 }
