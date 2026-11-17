@@ -50,8 +50,8 @@ public class GatewayServiceInvoker implements ServiceInvoker {
     private <RES> void resolveResponse(InvokeContext<RES> invokeContext) {
         InvokeResponse<RES> invokeResponse = invokeContext.getInvokeResponse();
         Map<String, String> headers = invokeResponse.getHeader();
-        String responseCode = (String) headers.get("code");
-        String errorMsg = "";
+        String responseCode = headers.get("code");
+        String errorMsg;
         ResponseStatus responseStatus;
         if (StringUtils.isBlank(responseCode)) {
             responseStatus = ResponseStatus.UNKNOWN;
@@ -59,7 +59,7 @@ public class GatewayServiceInvoker implements ServiceInvoker {
             responseStatus = ResponseStatus.SUCCESS;
         } else {
             responseStatus = ResponseStatus.FAIL;
-            errorMsg = (String) headers.get("desc");
+            errorMsg = headers.get("desc");
             invokeResponse.setErrorMsg(errorMsg);
         }
 

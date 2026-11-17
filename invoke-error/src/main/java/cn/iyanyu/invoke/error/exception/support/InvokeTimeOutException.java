@@ -1,6 +1,6 @@
 package cn.iyanyu.invoke.error.exception.support;
 
-import cn.iyanyu.base.error.SystemException;
+import cn.iyanyu.base.comm.error.SystemException;
 
 public class InvokeTimeOutException extends SystemException {
 

@@ -1,5 +1,6 @@
 package cn.iyanyu.invoke.core.protocol.rest;
 
+import cn.iyanyu.base.spec.util.SystemPropertiesUtil;
 import cn.iyanyu.invoke.api.config.InvokeDefinition;
 import cn.iyanyu.invoke.api.enums.HttpMethod;
 import cn.iyanyu.invoke.api.model.InvokeContext;
@@ -57,13 +58,11 @@ public class RestLoadProtocolHandler extends AbstractRestProtocolHandler {
                 if (org.springframework.http.HttpMethod.GET.name().equalsIgnoreCase(httpMethod.name())) {
                     httpHeaders.set("Content-Type", "application/x-www-form-urlencoded");
                     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-                    requestParams.forEach((k, v) -> {
-                        params.add(k, String.valueOf(v));
-                    });
-                    UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+                    requestParams.forEach((k, v) -> params.add(k, String.valueOf(v)));
+                    UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url);
                     URI uri = builder.queryParams(params).build().encode().toUri();
                     if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("[Service Invoke] [Rest Load] Send GET request, the uri is: [{}]", uri.toString());
+                        LOGGER.debug("[Service Invoke] [Rest Load] Send GET request, the uri is: [{}]", uri);
                     }
 
                     result = this.loadRestTemplate.getForEntity(uri, Object.class);
@@ -73,7 +72,7 @@ public class RestLoadProtocolHandler extends AbstractRestProtocolHandler {
                         LOGGER.debug("[Service Invoke] [Rest Load] Send POST request, the request headers is[{}], request body is[{}]", httpEntity.getHeaders(), httpEntity.getBody());
                     }
 
-                    result = this.loadRestTemplate.exchange(url, org.springframework.http.HttpMethod.valueOf(httpMethod.name()), httpEntity, Object.class, new Object[0]);
+                    result = this.loadRestTemplate.exchange(url, org.springframework.http.HttpMethod.valueOf(httpMethod.name()), httpEntity, Object.class);
                 }
             } catch (ResourceAccessException var16) {
                 throw AppOnlError.InvokeError.E0002(var16.getMessage(), var16);
@@ -95,7 +94,7 @@ public class RestLoadProtocolHandler extends AbstractRestProtocolHandler {
 
 
     private ResponseEntity<Object> doMock(InvokeDefinition invokeDefinition) {
-        MockPkgLoader mockPkgLoader = (MockPkgLoader) SpringUtils.getBean(MockPkgLoader.class);
+        MockPkgLoader mockPkgLoader = SpringUtils.getBean(MockPkgLoader.class);
         String mockPkg = mockPkgLoader.loadMockPkg(invokeDefinition);
         return new ResponseEntity<>(mockPkg, HttpStatus.OK);
     }

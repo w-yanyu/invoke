@@ -1,0 +1,20 @@
+package cn.iyanyu.invoke.error.exception.support;
+
+import cn.iyanyu.base.comm.error.SystemException;
+
+public class InvokeException extends SystemException {
+
+    public InvokeException(String code, String message) {
+        super(code, message);
+    }
+
+    public InvokeException(String code, String message, String... params) {
+        super(code, message, params);
+    }
+
+    public InvokeException(String code, String message, Throwable cause) {
+        super(code, message, cause);
+    }
+
+}
+

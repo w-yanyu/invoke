@@ -1,6 +1,5 @@
 package cn.iyanyu.invoke.core.protocol.rest;
 
-import cn.iyanyu.invoke.api.model.InvokeContext;
 import cn.iyanyu.invoke.api.pkg.InvokePkgConverter;
 import cn.iyanyu.invoke.api.protocol.InvokeProtocolHandler;
 import cn.iyanyu.invoke.comm.util.SpringUtils;
@@ -19,10 +18,11 @@ public abstract class AbstractRestProtocolHandler implements InvokeProtocolHandl
     public AbstractRestProtocolHandler() {
     }
 
+    @Override
     public InvokePkgConverter getPkgConverter(String converterType) {
-        InvokePkgConverter converter = (InvokePkgConverter)this.converterTypeMap.get(converterType);
+        InvokePkgConverter converter = (InvokePkgConverter) this.converterTypeMap.get(converterType);
         if (converter == null) {
-            throw AppOnlError.InvokeError.EOO1(converterType);
+            throw AppOnlError.InvokeError.E0001(converterType);
         } else {
             return converter;
         }
