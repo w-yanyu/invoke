@@ -1,8 +1,8 @@
 package cn.iyanyu.invoke.api.mq.producer.retry;
 
-import cn.iyanyu.invoke.api.mq.common.MqMessage;
-import cn.iyanyu.invoke.api.mq.common.MqSendResult;
-import cn.iyanyu.invoke.api.mq.producer.MessageProducer;
+import cn.iyanyu.base.model.api.mq.common.MqMessage;
+import cn.iyanyu.base.mq.common.MqSendResult;
+import cn.iyanyu.base.mq.producer.MessageProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

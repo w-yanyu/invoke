@@ -1,13 +1,15 @@
 package cn.iyanyu.invoke.core.protocol.mq;
 
+import cn.iyanyu.base.model.api.online.OnlineResponse;
+import cn.iyanyu.base.model.api.online.datamapping.MappingKey;
 import cn.iyanyu.base.spec.util.SystemPropertiesUtil;
 import cn.iyanyu.invoke.api.config.InvokeDefinition;
 import cn.iyanyu.invoke.api.model.InvokeContext;
 import cn.iyanyu.invoke.api.model.InvokeRequest;
 import cn.iyanyu.invoke.api.model.InvokeResponse;
-import cn.iyanyu.invoke.api.mq.common.MqMessage;
-import cn.iyanyu.invoke.api.mq.common.MqSendResult;
-import cn.iyanyu.invoke.api.mq.enums.SendStatus;
+import cn.iyanyu.base.model.api.mq.common.MqMessage;
+import cn.iyanyu.base.mq.common.MqSendResult;
+import cn.iyanyu.base.mq.producer.enums.SendStatus;
 import cn.iyanyu.invoke.api.mq.producer.MqMessageProducer;
 import cn.iyanyu.invoke.api.pkg.InvokePkgConverter;
 import cn.iyanyu.invoke.api.pkg.MockPkgLoader;
@@ -20,7 +22,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 
 import java.util.Map;
-import java.util.Optional;
 
 public class MqProtocolHandler implements InvokeProtocolHandler {
 
@@ -56,7 +57,7 @@ public class MqProtocolHandler implements InvokeProtocolHandler {
                 mqMessage.setMessageBody(requestParams);
                 mqMessage.setProperties(requestHeader);
 
-                String globalBusinessTrackNo = requestParams.get("globalBusinessTrackNo").toString();
+                String globalBusinessTrackNo = requestParams.get(MappingKey.globalBusinessTrackNo).toString();
                 mqMessage.setGlobalBusinessTrackNo(globalBusinessTrackNo);
                 MqSendResult sendResult = producer.syncSend(mqMessage);
                 if (sendResult == null || sendResult.getSendStatus() != SendStatus.SEND_OK) {
@@ -64,8 +65,8 @@ public class MqProtocolHandler implements InvokeProtocolHandler {
                 }
 
                 OnlineResponse onlineResponse = new OnlineResponse();
-                onlineResponse.putIntoSys(SysMappingKey.globalBusinessTrackNo, globalBusinessTrackNo);
-                onlineResponse.putIntoSys(SysMappingKey.responseTypeCode, "01");
+                onlineResponse.putIntoSys(MappingKey.globalBusinessTrackNo, globalBusinessTrackNo);
+                onlineResponse.putIntoSys(MappingKey.responseTypeCode, "01");
             } catch (Exception var16) {
                 throw AppOnlError.InvokeError.E0006(var16.getMessage(), var16);
             }

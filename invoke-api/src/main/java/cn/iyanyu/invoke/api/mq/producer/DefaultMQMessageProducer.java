@@ -1,9 +1,10 @@
 package cn.iyanyu.invoke.api.mq.producer;
 
-import cn.iyanyu.invoke.api.mq.common.BatchMessage;
-import cn.iyanyu.invoke.api.mq.common.MqMessage;
-import cn.iyanyu.invoke.api.mq.common.MqSendResult;
-import cn.iyanyu.invoke.api.mq.common.MqTransactionSendResult;
+import cn.iyanyu.base.mq.producer.MessageProducer;
+import cn.iyanyu.base.mq.common.BatchMessage;
+import cn.iyanyu.base.model.api.mq.common.MqMessage;
+import cn.iyanyu.base.mq.common.MqSendResult;
+import cn.iyanyu.base.mq.common.MqTransactionSendResult;
 import cn.iyanyu.invoke.api.mq.loadbalancer.ProducerDynamicLoadBalancer;
 import cn.iyanyu.invoke.api.mq.producer.retry.AsyncSendRetryAction;
 import org.slf4j.Logger;
@@ -42,7 +43,7 @@ public class DefaultMQMessageProducer implements MqMessageProducer, MultiMqMessa
                 return producer.send(mqMessage);
             } catch (Throwable var4) {
                 LOGGER.warn("Send message fail. will be retry", var4);
-                return (MqSendResult) this.retry((targetId) -> this.syncSend(targetId, mqMessage));
+                return this.retry((targetId) -> this.syncSend(targetId, mqMessage));
             }
         }
     }

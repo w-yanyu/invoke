@@ -1,6 +1,6 @@
 package cn.iyanyu.invoke.comm.util.json;
 
-import cn.iyanyu.invoke.comm.factories.FactoriesLoader;
+import cn.iyanyu.base.comm.factories.FactoriesLoader;
 
 import java.lang.reflect.Type;
 import java.util.List;

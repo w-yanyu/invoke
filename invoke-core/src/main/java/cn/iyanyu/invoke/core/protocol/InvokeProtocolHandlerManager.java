@@ -1,7 +1,7 @@
 package cn.iyanyu.invoke.core.protocol;
 
 import cn.iyanyu.invoke.api.protocol.InvokeProtocolHandler;
-import cn.iyanyu.invoke.comm.factories.FactoriesLoader;
+import cn.iyanyu.base.comm.factories.FactoriesLoader;
 
 import java.util.List;
 import java.util.Map;

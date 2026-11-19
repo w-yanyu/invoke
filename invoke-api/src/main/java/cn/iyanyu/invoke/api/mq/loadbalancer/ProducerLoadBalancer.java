@@ -1,7 +1,7 @@
 package cn.iyanyu.invoke.api.mq.loadbalancer;
 
-import cn.iyanyu.invoke.api.mq.common.MqMessage;
-import cn.iyanyu.invoke.api.mq.producer.MessageProducer;
+import cn.iyanyu.base.model.api.mq.common.MqMessage;
+import cn.iyanyu.base.mq.producer.MessageProducer;
 
 import java.util.List;
 

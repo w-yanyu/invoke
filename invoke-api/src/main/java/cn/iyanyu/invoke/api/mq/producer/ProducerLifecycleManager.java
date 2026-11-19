@@ -1,5 +1,7 @@
 package cn.iyanyu.invoke.api.mq.producer;
 
+import cn.iyanyu.base.mq.producer.MessageProducer;
+
 import java.util.List;
 
 public interface ProducerLifecycleManager {

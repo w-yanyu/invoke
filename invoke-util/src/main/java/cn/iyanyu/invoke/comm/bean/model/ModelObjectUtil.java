@@ -1,6 +1,6 @@
 package cn.iyanyu.invoke.comm.bean.model;
 
-import cn.iyanyu.invoke.comm.factories.FactoriesLoader;
+import cn.iyanyu.base.comm.factories.FactoriesLoader;
 
 public class ModelObjectUtil {
     private ModelObjectUtil() {
